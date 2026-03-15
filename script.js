@@ -4,6 +4,7 @@ class App {
     constructor() {
         this.expenses = [];
         this.budget = INITIAL_BUDGET;
+        this.editingId = null;
 
         // DOM Elements
         this.form = document.getElementById('expenseForm');
@@ -23,11 +24,18 @@ class App {
         this.emptyState = document.getElementById('emptyState');
         this.sortOrder = document.getElementById('sortOrder');
         this.resetBtn = document.getElementById('resetBtn');
+        this.logoutBtn = document.getElementById('logoutBtn');
+        this.submitExpenseBtn = document.getElementById('submitExpenseBtn');
 
         this.init();
     }
 
     async init() {
+        if (sessionStorage.getItem('isAdmin') !== 'true') {
+            window.location.href = 'index.html';
+            return;
+        }
+
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
         this.dateInput.value = today;
@@ -36,6 +44,12 @@ class App {
         this.form.addEventListener('submit', this.handleAddExpense.bind(this));
         this.sortOrder.addEventListener('change', this.render.bind(this));
         this.resetBtn.addEventListener('click', this.handleReset.bind(this));
+        if (this.logoutBtn) {
+            this.logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('isAdmin');
+                window.location.href = 'index.html';
+            });
+        }
 
         // Load data from JSON server
         await this.loadData();
@@ -113,15 +127,28 @@ class App {
 
         if (!dateVal || !descVal) return;
 
-        const newExpense = {
-            id: Date.now().toString(),
-            date: dateVal,
-            desc: descVal,
-            amount: amountValue,
-            timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-        };
+        if (this.editingId) {
+            const index = this.expenses.findIndex(e => e.id === this.editingId);
+            if (index !== -1) {
+                this.expenses[index].amount = amountValue;
+                this.expenses[index].date = dateVal;
+                this.expenses[index].desc = descVal;
+            }
+            this.editingId = null;
+            if (this.submitExpenseBtn) {
+                this.submitExpenseBtn.innerHTML = '<i class="fas fa-plus"></i> Add Expense';
+            }
+        } else {
+            const newExpense = {
+                id: Date.now().toString(),
+                date: dateVal,
+                desc: descVal,
+                amount: amountValue,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            };
+            this.expenses.push(newExpense);
+        }
 
-        this.expenses.push(newExpense);
         await this.saveData();
 
         // Reset form (keep date)
@@ -130,6 +157,21 @@ class App {
         this.descInput.focus();
 
         this.render();
+    }
+
+    async handleEdit(id) {
+        const expense = this.expenses.find(ex => ex.id === id);
+        if (expense) {
+            this.amountInput.value = expense.amount;
+            this.descInput.value = expense.desc;
+            this.dateInput.value = expense.date;
+            this.editingId = id;
+            if (this.submitExpenseBtn) {
+                this.submitExpenseBtn.innerHTML = '<i class="fas fa-save"></i> Update Expense';
+            }
+            this.descInput.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     async handleDelete(id) {
@@ -239,7 +281,10 @@ class App {
                 itemFragment.querySelector('.expense-amount').textContent = `-${this.formatCurrency(exp.amount)}`;
 
                 const deleteBtn = itemFragment.querySelector('.delete-btn');
-                deleteBtn.addEventListener('click', () => this.handleDelete(exp.id));
+                if (deleteBtn) deleteBtn.addEventListener('click', () => this.handleDelete(exp.id));
+
+                const editBtn = itemFragment.querySelector('.edit-btn');
+                if (editBtn) editBtn.addEventListener('click', () => this.handleEdit(exp.id));
 
                 dayItemsEl.appendChild(itemFragment);
             });

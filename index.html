@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>House Project Budget Tracker</title>
-    <meta name="description" content="A beautiful and intuitive day-by-day expense tracker for your house project.">
+    <title>House Project Budget Tracker - Viewer</title>
+    <meta name="description" content="View-only access for the day-by-day expense tracker.">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,11 +13,18 @@
     <!-- Font Awesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Hide actions specifically for client view just in case */
+        .expense-actions .delete-btn {
+            display: none !important;
+        }
+    </style>
 </head>
+
 <body>
     <div class="background-blob blob-1"></div>
     <div class="background-blob blob-2"></div>
-    
+
     <div class="app-container">
         <header class="app-header">
             <div class="header-icon">
@@ -24,12 +32,41 @@
             </div>
             <div>
                 <h1>House Project Tracker</h1>
-                <p>Manage your 70,000 budget day-by-day</p>
+                <p>Viewer Mode: 70,000 budget summary</p>
             </div>
-            <button id="resetBtn" class="icon-btn" title="Reset All Data">
-                <i class="fas fa-rotate-right"></i>
+            <button id="loginBtn" class="icon-btn login-btn" title="Admin Login">
+                <i class="fas fa-lock"></i> Admin
             </button>
         </header>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal-overlay hidden">
+            <div class="modal-content glass card form-card">
+                <div class="modal-header">
+                    <h2>Admin Login</h2>
+                    <button id="closeLoginBtn" class="icon-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <form id="loginForm">
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="username" required autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key input-icon"></i>
+                            <input type="password" id="password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn primary-btn" style="margin-top:1rem;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <main>
             <!-- Dashboard Overview -->
@@ -40,7 +77,7 @@
                         <i class="fas fa-wallet text-muted"></i>
                     </div>
                     <div class="card-value highlight" id="remainingBalance">70,000</div>
-                    
+
                     <div class="progress-wrapper">
                         <div class="progress-labels">
                             <span id="spentPercentage">0% spent</span>
@@ -51,7 +88,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="grid-2">
                     <div class="card stat-card glass">
                         <div class="icon-box blue">
@@ -74,41 +111,6 @@
                 </div>
             </section>
 
-            <!-- Add Expense Section -->
-            <section class="add-expense-section">
-                <div class="section-header">
-                    <h2>Record Expense</h2>
-                </div>
-                <form id="expenseForm" class="card form-card glass">
-                    <div class="form-row">
-                        <div class="form-group flex-1">
-                            <label for="expenseDate">Date</label>
-                            <div class="input-wrapper">
-                                <i class="fas fa-calendar-alt input-icon"></i>
-                                <input type="date" id="expenseDate" required>
-                            </div>
-                        </div>
-                        <div class="form-group flex-1">
-                            <label for="expenseAmount">Amount</label>
-                            <div class="input-wrapper">
-                                <i class="fas fa-rupee-sign input-icon"></i>
-                                <input type="number" id="expenseAmount" placeholder="0" min="1" step="0.01" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="expenseDesc">Description</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-tag input-icon"></i>
-                            <input type="text" id="expenseDesc" placeholder="e.g., Cement, Paint, Labor..." autocomplete="off" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn primary-btn">
-                        <i class="fas fa-plus"></i> Add Expense
-                    </button>
-                </form>
-            </section>
-
             <!-- Expense History -->
             <section class="expense-history">
                 <div class="section-header flex-between">
@@ -120,17 +122,17 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div id="expenseList" class="expense-list">
                     <!-- Expenses injected via JS -->
                 </div>
-                
+
                 <div id="emptyState" class="empty-state glass hidden">
                     <div class="empty-icon">
                         <i class="fas fa-receipt"></i>
                     </div>
                     <h3>No expenses yet</h3>
-                    <p>Add your first house expense above to get started.</p>
+                    <p>The administrator hasn't added any expenses yet.</p>
                 </div>
             </section>
         </main>
@@ -161,13 +163,11 @@
             </div>
             <div class="expense-actions">
                 <span class="expense-amount"></span>
-                <button class="delete-btn" title="Delete Expense">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
             </div>
         </div>
     </template>
 
-    <script src="script.js"></script>
+    <script src="client.js"></script>
 </body>
+
 </html>

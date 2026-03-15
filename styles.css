@@ -594,3 +594,77 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         padding: 0.25rem;
     }
 }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: var(--transition);
+}
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    transform: translateY(0);
+    transition: var(--transition);
+}
+.modal-overlay.hidden .modal-content {
+    transform: translateY(-20px);
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.modal-header h2 {
+    margin: 0;
+}
+.login-btn {
+    margin-left: auto;
+    width: auto;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+}
+.login-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: none;
+}
+
+/* Edit Button */
+.edit-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    opacity: 0;
+    transform: translateX(10px);
+}
+.expense-item:hover .edit-btn {
+    opacity: 1;
+    transform: translateX(0);
+}
+.edit-btn:hover {
+    color: var(--accent-warning);
+    background: rgba(255, 203, 107, 0.1);
+}

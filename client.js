@@ -19,12 +19,34 @@ class ViewerApp {
         this.emptyState = document.getElementById('emptyState');
         this.sortOrder = document.getElementById('sortOrder');
 
+        // Login Modal Elements
+        this.loginBtn = document.getElementById('loginBtn');
+        this.closeLoginBtn = document.getElementById('closeLoginBtn');
+        this.loginModal = document.getElementById('loginModal');
+        this.loginForm = document.getElementById('loginForm');
+
         this.init();
     }
 
     async init() {
         // Event Listeners
         this.sortOrder.addEventListener('change', this.render.bind(this));
+
+        this.loginBtn.addEventListener('click', () => this.loginModal.classList.remove('hidden'));
+        this.closeLoginBtn.addEventListener('click', () => this.loginModal.classList.add('hidden'));
+
+        this.loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if (user === 'admin' && pass === 'admin') {
+                sessionStorage.setItem('isAdmin', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                alert('Invalid username or password');
+            }
+        });
 
         // Auto refresh every 30 seconds
         this.startAutoRefresh();
